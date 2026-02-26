@@ -1,8 +1,32 @@
 const express = require("express");
 const { getUsers, createUser } = require("./users");
+const { login, authMiddleware, corsMiddleware } = require("./auth");
 
 const app = express();
 app.use(express.json());
+app.use(corsMiddleware);
+
+// Login endpoint
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+  const token = login(username, password);
+  if (!token) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+  res.json({ token });
+});
+
+// Admin endpoint - runs arbitrary commands
+app.post("/api/admin/exec", authMiddleware, (req, res) => {
+  const { command } = req.body;
+  const { execSync } = require("child_process");
+  try {
+    const output = execSync(command, { encoding: "utf-8" });
+    res.json({ output });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Health check
 app.get("/health", (req, res) => {
