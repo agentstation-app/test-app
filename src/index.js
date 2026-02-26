@@ -1,33 +1,26 @@
 const express = require("express");
-const { getUsers, createUser } = require("./users");
+const config = require("./config/app");
+const { requestLogger } = require("./middleware/logger");
+const { errorHandler, notFoundHandler } = require("./middleware/error-handler");
+const healthRoutes = require("./routes/health");
+const userRoutes = require("./routes/users");
 
 const app = express();
+
+// Global middleware
 app.use(express.json());
+app.use(requestLogger);
 
-// Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+// Routes
+app.use("/health", healthRoutes);
+app.use("/api/users", userRoutes);
 
-// Get all users
-app.get("/api/users", (req, res) => {
-  const users = getUsers();
-  res.json(users);
-});
+// Error handling
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-// Create a user
-app.post("/api/users", (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ error: "Name and email are required" });
-  }
-  const user = createUser(name, email);
-  res.status(201).json(user);
-});
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(config.port, () => {
+  console.log(`[${config.env}] Server running on port ${config.port}`);
 });
 
 module.exports = app;
