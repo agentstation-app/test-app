@@ -15,4 +15,4 @@ Simple Express API for testing AgentStation's PR analysis pipeline.
 
 ## CI/CD
 
-This repository uses AgentStation's risk-check GitHub Action to analyze pull requests.
+This repository uses AgentStation's risk-check GitHub Action to analyze PRs for risk.
