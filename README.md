@@ -12,3 +12,7 @@ Simple Express API for testing AgentStation's PR analysis pipeline.
 
 - `formatUser(user)` — Format a user object for API response
 - `validateUserInput(data)` — Validate user creation input
+
+## CI/CD
+
+This repository uses AgentStation's risk-check GitHub Action to analyze pull requests.
