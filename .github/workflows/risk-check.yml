@@ -1,0 +1,27 @@
+name: Risk Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  risk-check:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      statuses: write
+    steps:
+      - uses: agentstation-app/agentstation/action@main
+        id: risk
+        with:
+          api-key: ${{ secrets.AGENTSTATION_API_KEY }}
+          risk-threshold: 75
+          timeout: 300
+
+      - name: Print results
+        if: always()
+        run: |
+          echo "Risk Score: ${{ steps.risk.outputs.risk-score }}"
+          echo "Risk Level: ${{ steps.risk.outputs.risk-level }}"
+          echo "Analysis URL: ${{ steps.risk.outputs.analysis-url }}"
+          echo "Status: ${{ steps.risk.outputs.status }}"
